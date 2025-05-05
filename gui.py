@@ -83,6 +83,7 @@ def i_submit(*args):
 def update_columns(*args):
     x = from_var.get()
     if x == "Users":
+        check_button.pack_forget()
         qframe_sub.pack_forget()
         qframe_post.pack_forget()
         qframe_project.pack_forget()
@@ -90,7 +91,9 @@ def update_columns(*args):
         q_columns_label.pack()
         qframe_users.pack()
         qframe_sub.pack()
+        check_button.pack()
     elif x == "Post":
+        check_button.pack_forget()
         qframe_sub.pack_forget()
         qframe_users.pack_forget()
         qframe_project.pack_forget()
@@ -98,7 +101,9 @@ def update_columns(*args):
         q_columns_label.pack()
         qframe_post.pack()
         qframe_sub.pack()
+        check_button.pack()
     elif x == "Project":
+        check_button.pack_forget()
         qframe_sub.pack_forget()
         qframe_users.pack_forget()
         qframe_post.pack_forget()
@@ -106,7 +111,9 @@ def update_columns(*args):
         q_columns_label.pack()
         qframe_project.pack()
         qframe_sub.pack()
+        check_button.pack()
     elif x == "Record":
+        check_button.pack_forget()
         qframe_sub.pack_forget()
         qframe_users.pack_forget()
         qframe_post.pack_forget()
@@ -114,43 +121,72 @@ def update_columns(*args):
         q_columns_label.pack()
         qframe_record.pack()
         qframe_sub.pack()
+        check_button.pack()
 
 def q_submit(table):
-    # entries = [e.get() for e in q_entries]
-    # print(table.get())
-    # for e in entries:
-    #     print(e)
     x = table.get()
-    if x == "Users":
-        print(x)
-        print(q_columns_user_var.get())
-        print(q_drop_op_var.get())
-        print(q_entry_value.get())
-    elif x == "Post":
-        print(x)
-        print(q_columns_post_var.get())
-        print(q_drop_op_var.get())
-        print(q_entry_value.get())
-    elif x == "Project":
-        print(x)
-        print(q_columns_project_var.get())
-        print(q_drop_op_var.get())
-        print(q_entry_value.get())
-    elif x == "Record":
-        print(x)
-        print(q_columns_record_var.get())
-        print(q_drop_op_var.get())
-        print(q_entry_value.get())
+    if checked:
+        if x == "Users":
+            print(x)
+            print(q_columns_user_var.get())
+            print(q_drop_op_var.get())
+            print(q_entry_value.get())
+            print(more_drop_op_var.get())
+            print(more_entry_value.get())
+        elif x == "Post":
+            print(x)
+            print(q_columns_post_var.get())
+            print(q_drop_op_var.get())
+            print(q_entry_value.get())
+            print(more_drop_op_var.get())
+            print(more_entry_value.get())
+        elif x == "Project":
+            print(x)
+            print(q_columns_project_var.get())
+            print(q_drop_op_var.get())
+            print(q_entry_value.get())
+            print(more_drop_op_var.get())
+            print(more_entry_value.get())
+        elif x == "Record":
+            print(x)
+            print(q_columns_record_var.get())
+            print(q_drop_op_var.get())
+            print(q_entry_value.get())
+            print(more_drop_op_var.get())
+            print(more_entry_value.get())
+    else:
+        if x == "Users":
+            print(x)
+            print(q_columns_user_var.get())
+            print(q_drop_op_var.get())
+            print(q_entry_value.get())
+        elif x == "Post":
+            print(x)
+            print(q_columns_post_var.get())
+            print(q_drop_op_var.get())
+            print(q_entry_value.get())
+        elif x == "Project":
+            print(x)
+            print(q_columns_project_var.get())
+            print(q_drop_op_var.get())
+            print(q_entry_value.get())
+        elif x == "Record":
+            print(x)
+            print(q_columns_record_var.get())
+            print(q_drop_op_var.get())
+            print(q_entry_value.get())
         
     
-# def show_more(*args):
-#     global checked 
-#     if not checked:
-#         qframe_users_more.pack()
-#         checked = not checked
-#     else:
-#         qframe_users_more.pack_forget()
-#         checked = not checked
+def show_more(*args):
+    global checked 
+    # button.pack_forget()
+    if checked:
+        more_frame.pack_forget()
+        checked = not checked
+    else:
+        more_frame.pack()
+        checked = not checked
+    # button.pack()
 
 iframe = tk.Frame(root)
 qframe = tk.Frame(root)
@@ -237,7 +273,6 @@ q_drop_op = tk.OptionMenu(qframe_sub, q_drop_op_var, "=", "<", "<=", ">=", ">", 
 #value entry
 q_label_value = tk.Label(qframe_sub, text="VALUE")
 q_entry_value = tk.Entry(qframe_sub)
-q_label_socmed = tk.Label(qframe_sub, text="Social Media")
 button = tk.Button(qframe_sub, text="Submit", command=lambda: q_submit(from_var))
 
 q_columns_label = tk.Label(qframe, text="COLUMN")
@@ -287,12 +322,26 @@ q_columns_record_drop = tk.OptionMenu(qframe_record, q_columns_record_var, *tabl
 q_columns_record_drop.pack()
 
 """MORE"""
-# checked = False
-# check_button = tk.Button(qframe_users, text="more", command=show_more)
-# check_button.pack()
+more_frame = tk.Frame(qframe)
 
-# l = tk.Label(qframe_users_more, text="MORE")
-# l.pack()
+checked = False
+check_button = tk.Button(qframe, text="more", command=show_more)
+
+#operator dropdown
+more_drop_op_label = tk.Label(more_frame, text="OPERATOR")
+more_drop_op_var = tk.StringVar(more_frame, value="Choose")
+more_drop_op = tk.OptionMenu(more_frame, more_drop_op_var, "=", "<", "<=", ">=", ">", "!=")
+
+#value entry
+more_label_value = tk.Label(more_frame, text="VALUE")
+more_entry_value = tk.Entry(more_frame)
+
+# q_columns_label = tk.Label(qframe, text="COLUMN")
+
+more_drop_op_label.pack()
+more_drop_op.pack()
+more_label_value.pack()
+more_entry_value.pack()
 
 
 root.mainloop()
