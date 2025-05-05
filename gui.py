@@ -1,4 +1,5 @@
 import tkinter as tk
+import backend
 
 tables = {
     "Users": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
@@ -76,8 +77,15 @@ def i_submit(*args):
     for i in i_entries:
         entries.append(i.get())
         i.delete(0, tk.END)
-    for e in entries:
-        print(e)
+    print(entries)
+    # backend call to actually query db for insert
+    ec = backend.enterTuple(entries)
+    if ec == 1:
+        # show input invalid
+        pass
+    
+    # for e in entries:
+    #     print(e)
 
 
 def update_columns(*args):
