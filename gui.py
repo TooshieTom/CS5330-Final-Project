@@ -43,6 +43,7 @@ def IQ_change_frame(*args):
 def get_posts():
     name = pi_proj_entry.get()
     print(name)
+    
     #send query to retrieve all posts
     #get (SELECT username, soc_med, time_posted FROM post)
 
@@ -54,6 +55,7 @@ def p_submit(*args):
         i.delete(0,tk.END)
 
 def r_submit(*args):
+    #can do the smae thing of saying if it was successful or not
     pass
 
 def i_table_frame(*args):
@@ -179,6 +181,9 @@ def update_columns(*args):
 def create_qtable(table, data):
     tree_frame.pack_forget()
     columns = tables[table]
+
+    for widget in tree_frame.winfo_children():
+        widget.destroy()
     # print(columns)
     tree = ttk.Treeview(tree_frame, columns=columns, show="headings", height=5)
     for col in columns:
@@ -194,8 +199,35 @@ def create_qtable(table, data):
 
 
 def temp_db(arr): 
-    x = [('Crimrun', 'Insta', datetime.datetime(1970, 1, 1, 0, 0, 1), None, None, None, None, None, None, None, None, None, None, None), 
-         ('Crimrun', 'Insta', datetime.datetime(2020, 5, 5, 0, 0, 1), None, None, None, None, None, None, None, None, None, None, None)]
+    x = from_var.get()
+    if x == "User":
+        # User table
+        user_data = [
+            ("jdoe92", "Twitter", "John Doe", True, "USA", "UK", 31, "Male"),
+            ("asmith88", "Instagram", "Alice Smith", False, "Canada", "Canada", 29, "Female"),
+        ]
+        return user_data
+    elif x == "Post":
+        # Post table
+        post_data = [
+            ("jdoe92", "Twitter", "2025-04-01 12:34:00", "New York", "NY", "USA", "Image", "John", "Doe", 120, 5, "Loving this weather!", True, "2025-04-01 12:34:00"),
+            ("asmith88", "Instagram", "2025-03-25 09:15:00", "Toronto", "ON", "Canada", "Video", "Alice", "Smith", 300, 2, "Morning workout done!", True, "2025-03-25 09:15:00"),
+        ]
+        return post_data
+    elif x == "Project":
+        # Project table
+        project_data = [
+            ("GreenTech", "Emma Wilson", "EcoLab Inc.", "2023-01-15", "2024-12-31"),
+            ("AI4Good", "Daniel Chen", "TechU Research", "2022-09-01", "2025-05-30"),
+        ]
+        return project_data
+    elif x == "Record":
+        # Record table
+        record_data = [
+            ("GreenTech", "Installed solar panels in three locations.", "energy, sustainability", "jdoe92", "2024-11-22 10:00:00", "Twitter"),
+            ("AI4Good", "Developed a sentiment analysis tool.", "AI, NLP", "asmith88", "2025-01-05 14:45:00", "Instagram"),
+        ]
+        return record_data
     return x
 
 
