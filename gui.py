@@ -211,7 +211,7 @@ def better_q_submit():
         submit.append(x)
         print(q_words[i], ": ", x)
     #Pass submit array
-    data = temp_db(submit)
+    data = temp_db(submit)#############################################################change line for database
     create_qtable(selected_table, data)
 
                 
