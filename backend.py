@@ -33,6 +33,8 @@ def makeTable(cursor):
        State VARCHAR(50),
        Country VARCHAR(50),
        Multimedia VARCHAR(50),
+       Name_F VARCHAR(50),
+       Name_L VARCHAR(50),
        Likes INT CHECK (Likes >= 0),
        Dislikes INT CHECK (Dislikes >= 0),
        Text TEXT,
@@ -58,9 +60,9 @@ def makeTable(cursor):
     CREATE TABLE if NOT EXISTS Record (
        Project VARCHAR(100) NOT NULL,
        Text TEXT,
-       Fields TEXT,
+       Fields JSON,
        Username VARCHAR(40) NOT NULL,
-       Time_Posted TIMESTAMP NOT NULL,
+       Time_Posted DATE NOT NULL,
        Soc_Med VARCHAR(50) NOT NULL,
         PRIMARY KEY(Project,Username,Soc_Med,Time_Posted),
        FOREIGN KEY (Project) REFERENCES Project(Name)
@@ -69,16 +71,57 @@ def makeTable(cursor):
 
 
 
-def clearTuples(cursor):
-    makeTable(cursor)
+def clearTuples():
+    # Load environment variables from .env file
+    load_dotenv()
 
-    cursor.execute("DELETE FROM User;")
+    # Retrieve values
+    db_user = os.getenv("DB_USER")
+    db_password = os.getenv("DB_PASSWORD")
+    try:
+        # Establish connection
+        conn = mysql.connector.connect(
+            host="127.0.0.1",
+            user=db_user,
+            password=db_password,
+            database="postdb",
+            connection_timeout=5,  # force error if hangs
+            auth_plugin="caching_sha2_password",
+            use_pure=True
+        )
+        # Create a cursor object
+        cursor = conn.cursor()
+        makeTable(cursor)
 
-    cursor.execute("DELETE FROM Post;")
-    
-    cursor.execute("DELETE FROM Project;")
+        cursor.execute("DELETE FROM User;")
 
-    cursor.execute("DELETE FROM Record;")
+        cursor.execute("DELETE FROM Post;")
+        
+        cursor.execute("DELETE FROM Project;")
+
+        cursor.execute("DELETE FROM Record;")
+
+
+    except mysql.connector.Error as err:
+        print("Input Invalid")
+        return 1
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return
+    finally:
+        # Close the cursor
+        if cursor is not None: 
+            try:
+                cursor.close()  
+            except Exception as e:
+                print(f"Unexpected error while closing cursor: {e}")
+        # Close the connection
+        if conn is not None:
+            try:
+                conn.close()  
+                # print("Database connection closed.")
+            except Exception as e:
+                print(f"Unexpected error while closing connection: {e}")
 
 
 def enterTuple(inputs):
@@ -102,12 +145,15 @@ def enterTuple(inputs):
 
         # Create a cursor object
         cursor = conn.cursor()
+
+        # Do pre-processing
         query = "INSERT INTO "
         num_inputs = 0
+        parameters = []
         # Need to convert into parameterized query, and then execute
         if len(inputs) == 8:
             # User input
-            query += "user ("
+            query += "`user` ("
             for i in range(len(inputs)):
                 value = inputs[i]
                 # update query depending on values
@@ -130,32 +176,108 @@ def enterTuple(inputs):
                 elif i == 7:
                     query += "gender, "
                 num_inputs += 1
+                parameters.append(inputs[i])
 
-            query = query[:-2]
-            query += ") VALUES ("
-            
-            for i in range(num_inputs):
-                query += "%s, "
-            query = query[:-2]
-            query += ")"
-
-            print(query)
-
-
-                
-
-
-        if len(inputs) == 5:
+        elif len(inputs) == 5:
             # Project
-            query += "project "
-        if len(inputs) == 6:
+            query += "project ("
+            for i in range(len(inputs)):
+                value = inputs[i]
+                # update query depending on values
+                if value == "":
+                    continue
+                elif i == 0:
+                    query += "name, "
+                elif i == 1:
+                    query += "manager, "
+                elif i == 2:
+                    query += "institute, "
+                elif i == 3:
+                    query += "start_date, "
+                elif i == 4:
+                    query += "end_date, "
+                num_inputs += 1
+                parameters.append(inputs[i])
+        elif len(inputs) == 6:
             # Record
-            query += "record "
+            query += "record ("
+            for i in range(len(inputs)):
+                value = inputs[i]
+                # update query depending on values
+                if value == "":
+                    continue
+                elif i == 0:
+                    query += "project, "
+                elif i == 1:
+                    query += "text, "
+                elif i == 2:
+                    query += "fields, "
+                elif i == 3:
+                    query += "username, "
+                elif i == 4:
+                    query += "time_posted, "
+                elif i == 5:
+                    query += "soc_med, "
+                num_inputs += 1
+                parameters.append(inputs[i])
         else:
             # Post
-            query += "post "
+            query += "post ("
+            for i in range(len(inputs)):
+                value = inputs[i]
+                # update query depending on values
+                if value == "":
+                    continue
+                elif i == 0:
+                    query += "username, "
+                elif i == 1:
+                    query += "soc_med, "
+                elif i == 2:
+                    query += "time_posted, "
+                elif i == 3:
+                    query += "city, "
+                elif i == 4:
+                    query += "state, "
+                elif i == 5:
+                    query += "country, "
+                elif i == 6:
+                    query += "multimedia, "
+                elif i == 7:
+                    query += "name_f, "
+                elif i == 8:
+                    query += "name_l, "
+                elif i == 9:
+                    query += "likes, "
+                elif i == 10:
+                    query += "dislikes, "
+                elif i == 11:
+                    query += "text, "
+                elif i == 12:
+                    query += "poster_og, "
+                elif i == 13:
+                    query += "date_og, "
+                num_inputs += 1
+                parameters.append(inputs[i])
+
+
+        query = query[:-2]
+        query += ") VALUES ("
+        
+        for i in range(num_inputs):
+            query += "%s, "
+        query = query[:-2]
+        query += ")"
+
+        print(query)
+        print(parameters)
+
+        cursor.execute(query,parameters)
+        conn.commit()
+
+
 
     except mysql.connector.Error as err:
+        print("Input Invalid")
         return 1
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
@@ -177,61 +299,14 @@ def enterTuple(inputs):
 
 
 def main():
-    # Load environment variables from .env file
-    load_dotenv()
-
-    # Retrieve values
-    db_user = os.getenv("DB_USER")
-    db_password = os.getenv("DB_PASSWORD")
-    try:
-        # Establish connection
-        conn = mysql.connector.connect(
-            host="127.0.0.1",
-            user=db_user,
-            password=db_password,
-            database="postdb",
-            connection_timeout=5,  # force error if hangs
-            auth_plugin="caching_sha2_password",
-            use_pure=True
-        )
-
-        # Create a cursor object
-        cursor = conn.cursor()
-
-        clearTuples(cursor)
-
-        input = ["TooshieTom","Twitter","","","","","",""]
-        enterTuple(input,cursor)
-
-
-
-
-           
-    except mysql.connector.errors.Error as err:
-        print(f"Database error while processing commands: {err}")
-        return
-    except Exception as e:
-        print(f"An unexpected error occurred: {e}")
-        return
-    finally:
-        # Close the cursor
-        if cursor is not None: 
-            try:
-                cursor.close()  
-            except Exception as e:
-                print(f"Unexpected error while closing cursor: {e}")
-        # Close the connection
-        if conn is not None:
-            try:
-                conn.close()  
-                # print("Database connection closed.")
-            except Exception as e:
-                print(f"Unexpected error while closing connection: {e}")
+    # clearTuples()
+    input = ['Pooper', 'Scooper', '1970-02-01 00:00:01', '', '', '','','','','-1','','','']
+    # enterTuple(input)
 
 main()
 
 
 
 # Query post and project
-    # Post, query by social media, between times, 
+    # Post: query by social media and username, between times, certain first/last name
         
