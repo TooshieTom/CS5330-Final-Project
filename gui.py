@@ -31,10 +31,14 @@ def IQ_change_frame(*args):
         qframe.pack_forget()
         pi_frame.pack()
 
+def get_posts():
+    name = pi_proj_entry.get()
+    # print(name)
+    #send query to retrieve all posts
+    #get (SELECT username, soc_med, time_posted FROM post)
 
-# def clear_frame(frame):
-#     for widgets in frame.winfo_children():
-#         widgets.destroy()
+
+
 def i_table_frame(*args):
     x = i_table_drop_var.get()
     # print(x)
@@ -210,6 +214,7 @@ pi_entry_frame = tk.Frame(pi_frame)
 
 pi_proj_label = tk.Label(pi_frame, text="PROJECT NAME")
 pi_proj_entry = tk.Entry(pi_frame)
+pi_proj_button = tk.Button(pi_frame, text="update posts", command=get_posts)
 
 pi_po_usr_label = tk.Label(pi_label_frame, text="POST USERNAME")
 pi_po_usr_entry = tk.Entry(pi_entry_frame)
@@ -226,9 +231,11 @@ pi_proj_entry.pack()
 pi_label_frame.pack()
 pi_entry_frame.pack()
 
-pi_po_usr_label.pack(side="left", padx=30)
-pi_po_soc_label.pack(side="left",padx=30)
-pi_po_time_label.pack(side="left",padx=30)
+pi_proj_button.pack(pady=20)
+
+pi_po_usr_label.pack(side="left", padx=40)
+pi_po_soc_label.pack(side="left",padx=40)
+pi_po_time_label.pack(side="left",padx=40)
 pi_po_usr_entry.pack(side="left")
 pi_po_soc_entry.pack(side="left")
 pi_po_time_entry.pack(side="left")
