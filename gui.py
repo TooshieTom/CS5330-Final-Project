@@ -1,11 +1,11 @@
 import tkinter as tk
 from tkinter import ttk
-# import backend
+import backend
 
 tables = {
-    "Users": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
+    "User": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
     "Post": ["Username", "Soc_Med", "Time_Posted", "City", "State", "Country", "Multimedia", "Name_F", "Name_L", "Likes", "Dislikes", "Text", "Poster_OG", "Time_OG"],
-    "Project": ["Name", "Manager", "Institute", "Start_Date", "End_Date"],
+    "Project": ["Name", "Manager", "Institute", "Start_Date (Yr-M-D)", "End_Date (Yr-M-D)"],
     "Record": ["Project", "Text", "Fields", "Username", "Time_Posted", "Soc_Med"]
 }
 
@@ -30,7 +30,7 @@ def IQ_change_frame(*args):
 def i_table_frame(*args):
     x = i_table_drop_var.get()
     # print(x)
-    if x == "Users":
+    if x == "User":
         i_entries.clear()
         i_button.pack_forget()
         iframe_post.pack_forget()
@@ -84,16 +84,16 @@ def i_submit(*args):
         print(tables[x][i], ": ", entries[i])
 
     # backend call to actually query db for insert
-    # ec = backend.enterTuple(entries)
-    # if ec == 1:
-    #     # show input invalid
-    #     pass
+    ec = backend.enterTuple(entries)
+    if ec == 1:
+        # show input invalid
+        pass
 
 
 def update_columns(*args):
     x = from_var.get()
     # q_entries.clear()
-    if x == "Users":
+    if x == "User":
         check_button.pack_forget()
         qframe_sub.pack_forget()
         qframe_post.pack_forget()
@@ -136,81 +136,7 @@ def update_columns(*args):
         qframe_record.pack()
         qframe_sub.pack()
         check_button.pack()
-        q_entries[0] = q_columns_record_var
-
-def q_submit(table):
-    x = table.get()
-    if checked:
-        if x == "Users":
-            print(x)
-            print(q_columns_user_var.get())
-            print(q_drop_op_var.get())
-            print(q_entry_value.get())
-            print(more_drop_op_var.get())
-            print(more_entry_value.get())
-        elif x == "Post":
-            print(x)
-            print(q_columns_post_var.get())
-            print(q_drop_op_var.get())
-            print(q_entry_value.get())
-            print(more_drop_op_var.get())
-            print(more_entry_value.get())
-        elif x == "Project":
-            print(x)
-            print(q_columns_project_var.get())
-            print(q_drop_op_var.get())
-            print(q_entry_value.get())
-            print(more_drop_op_var.get())
-            print(more_entry_value.get())
-        elif x == "Record":
-            print(x)
-            print(q_columns_record_var.get())
-            print(q_drop_op_var.get())
-            print(q_entry_value.get())
-            print(more_drop_op_var.get())
-            print(more_entry_value.get())
-    else:
-        q_words = ["COLUMN", "OPERATOR", "VALUE"]
-        if x == "Users":
-            print("Table: ", x)
-            entries = []
-            for q in q_entries:
-                entries.append(q.get())
-                if isinstance(q, tk.Entry):
-                    q.delete(0, tk.END)
-            for i in range(len(entries)):
-                print(q_words[i], ": ", entries[i])
-        elif x == "Post":
-            print(x)
-            print("Table: ", x)
-            entries = []
-            for q in q_entries:
-                entries.append(q.get())
-                if isinstance(q, tk.Entry):
-                    q.delete(0, tk.END)
-            for i in range(len(entries)):
-                print(q_words[i], ": ", entries[i])
-        elif x == "Project":
-            print(x)
-            print("Table: ", x)
-            entries = []
-            for q in q_entries:
-                entries.append(q.get())
-                if isinstance(q, tk.Entry):
-                    q.delete(0, tk.END)
-            for i in range(len(entries)):
-                print(q_words[i], ": ", entries[i])
-        elif x == "Record":
-            print(x)
-            print("Table: ", x)
-            entries = []
-            for q in q_entries:
-                entries.append(q.get())
-                if isinstance(q, tk.Entry):
-                    q.delete(0, tk.END)
-            for i in range(len(entries)):
-                print(q_words[i], ": ", entries[i])
-            
+        q_entries[0] = q_columns_record_var            
             
 def better_q_submit():
     selected_table = from_var.get()
@@ -218,12 +144,13 @@ def better_q_submit():
     q_words = ["Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value",
                "Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value"]
     print(f"Table: {selected_table}")
-
+    submit = []
     for i in range(len(q_entries)):
         x = q_entries[i].get()
-        print(q_words[i], ": ", x)            
-        
-    
+        submit.append(x)
+        print(q_words[i], ": ", x)
+    #Pass submit array
+                
 def add_field():
     selected_table = from_var.get()
 
@@ -243,6 +170,7 @@ def add_field():
     op_drop.pack()
 
     value_label = tk.Label(field_frame, text="VALUE")
+    value_label.pack()
     value_entry = tk.Entry(field_frame)
     value_entry.pack()
 
@@ -250,26 +178,6 @@ def add_field():
     q_entries.append(column_var)
     q_entries.append(op_var)
     q_entries.append(value_entry)
-
-def show_more(*args):
-    global checked 
-
-    #what table?
-    x = from_var.get()
-    print(x)
-    #add column label
-    q_more_column_label = tk.Label(more_frame, text="COLUMN")
-    more_frame.pack_forget()
-    q_more_column_label.pack()
-    more_frame.pack()
-    # button.pack_forget()
-    if checked:
-        more_frame.pack_forget()
-        checked = not checked
-    else:
-        more_frame.pack()
-        checked = not checked
-    # button.pack()
 
 iframe = tk.Frame(root)
 qframe = tk.Frame(root)
@@ -296,7 +204,7 @@ i_table_drop.pack()
 """IFRAME USERS"""
 iframe_users = tk.Frame(iframe)
 
-for attribute in tables["Users"]:
+for attribute in tables["User"]:
     i_users_label = tk.Label(iframe_users, text=attribute)
     i_users_entry = tk.Entry(iframe_users)
     i_users_label.pack()
@@ -379,7 +287,7 @@ qframe_record = tk.Frame(qframe)
 
 """USERS"""
 q_columns_user_var = tk.StringVar(qframe_users, value="Choose")
-q_columns_user_drop = tk.OptionMenu(qframe_users, q_columns_user_var, *tables["Users"])
+q_columns_user_drop = tk.OptionMenu(qframe_users, q_columns_user_var, *tables["User"])
 
 
 q_columns_user_drop.pack()
