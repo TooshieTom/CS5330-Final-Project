@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import backend
+# import backend
 
 tables = {
     "User": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
@@ -15,14 +15,22 @@ root.title("Databases")
 
 def IQ_change_frame(*args):
     # print("hello")
-    if IQ_selected.get() == "Insert":
+    x = IQ_selected.get()
+    if x == "Insert":
         # clear_frame(qframe)
+        pi_frame.pack_forget()
         qframe.pack_forget()
         iframe.pack()
-    else:
+    elif x == "Query":
         # clear_frame(iframe)
+        pi_frame.pack_forget()
         iframe.pack_forget()
         qframe.pack()
+    else:
+        iframe.pack_forget()
+        qframe.pack_forget()
+        pi_frame.pack()
+
 
 # def clear_frame(frame):
 #     for widgets in frame.winfo_children():
@@ -72,7 +80,10 @@ def i_table_frame(*args):
                 i_entries.append(widget)
     i_button.pack()
 
+# ec = 1
+
 def i_submit(*args):
+    # global ec
     # print("SUBMITTED")
     x = i_table_drop_var.get()
     print("Table: ", x)
@@ -84,10 +95,15 @@ def i_submit(*args):
         print(tables[x][i], ": ", entries[i])
 
     # backend call to actually query db for insert
-    ec = backend.enterTuple(entries)
-    if ec == 1:
-        # show input invalid
-        pass
+    # ec = backend.enterTuple(entries)
+    # ec = 1
+    # if ec == 1:
+    #     # show input invalid
+    #     failed.pack()
+    #     success.pack_forget()
+    # else:
+    #     failed.pack_forget()
+    #     success.pack()
 
 
 def update_columns(*args):
@@ -184,9 +200,40 @@ qframe = tk.Frame(root)
 
 IQ_selected = tk.StringVar(value="Select")
 IQ_selected.trace_add('write', IQ_change_frame)
-drop = tk.OptionMenu(root, IQ_selected, "Insert", "Query")
+drop = tk.OptionMenu(root, IQ_selected, "Insert", "Query", "Project")
 drop.pack(pady=10)
 
+"""PROJECT INSERT FRAME"""
+pi_frame = tk.Frame(root)
+pi_label_frame = tk.Frame(pi_frame)
+pi_entry_frame = tk.Frame(pi_frame)
+
+pi_proj_label = tk.Label(pi_frame, text="PROJECT NAME")
+pi_proj_entry = tk.Entry(pi_frame)
+
+pi_po_usr_label = tk.Label(pi_label_frame, text="POST USERNAME")
+pi_po_usr_entry = tk.Entry(pi_entry_frame)
+
+pi_po_soc_label = tk.Label(pi_label_frame, text="POST SOC_MED")
+pi_po_soc_entry = tk.Entry(pi_entry_frame)
+
+pi_po_time_label = tk.Label(pi_label_frame, text="POST TIME")
+pi_po_time_entry = tk.Entry(pi_entry_frame)
+
+pi_proj_label.pack()
+pi_proj_entry.pack()
+
+pi_label_frame.pack()
+pi_entry_frame.pack()
+
+pi_po_usr_label.pack(side="left", padx=30)
+pi_po_soc_label.pack(side="left",padx=30)
+pi_po_time_label.pack(side="left",padx=30)
+pi_po_usr_entry.pack(side="left")
+pi_po_soc_entry.pack(side="left")
+pi_po_time_entry.pack(side="left")
+
+pi_table_frame = tk.Frame(pi_frame)
 
 """INSERT FRAME"""
 i_table_label = tk.Label(iframe, text="TABLE")
@@ -195,6 +242,9 @@ i_table_drop_var.trace_add('write', i_table_frame)
 i_table_drop = tk.OptionMenu(iframe, i_table_drop_var, *tables.keys())
 
 i_button = tk.Button(iframe, text="Submit Info" ,command=i_submit)
+
+success = tk.Label(iframe, text="INSERT SUCCESSFUL")
+failed = tk.Label(iframe, text="INSERT FAILED")
 
 i_entries = []
 
