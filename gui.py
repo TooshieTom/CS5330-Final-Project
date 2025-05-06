@@ -20,24 +20,40 @@ def IQ_change_frame(*args):
         # clear_frame(qframe)
         pi_frame.pack_forget()
         qframe.pack_forget()
+        rframe.pack_forget()
         iframe.pack()
     elif x == "Query":
         # clear_frame(iframe)
         pi_frame.pack_forget()
         iframe.pack_forget()
+        rframe.pack_forget()
         qframe.pack()
+    elif x == "Project":
+        iframe.pack_forget()
+        qframe.pack_forget()
+        rframe.pack_forget()
+        pi_frame.pack()
     else:
         iframe.pack_forget()
         qframe.pack_forget()
-        pi_frame.pack()
+        pi_frame.pack_forget()
+        rframe.pack()
 
 def get_posts():
     name = pi_proj_entry.get()
-    # print(name)
+    print(name)
     #send query to retrieve all posts
     #get (SELECT username, soc_med, time_posted FROM post)
 
+def p_submit(*args):
+    entries = []
+    for i in p_entries:
+        entries.append(i.get())
+        print(i.get())
+        i.delete(0,tk.END)
 
+def r_submit(*args):
+    pass
 
 def i_table_frame(*args):
     x = i_table_drop_var.get()
@@ -204,17 +220,55 @@ qframe = tk.Frame(root)
 
 IQ_selected = tk.StringVar(value="Select")
 IQ_selected.trace_add('write', IQ_change_frame)
-drop = tk.OptionMenu(root, IQ_selected, "Insert", "Query", "Project")
+drop = tk.OptionMenu(root, IQ_selected, "Insert", "Query", "Project", "Update Record")
 drop.pack(pady=10)
+
+"""RECORD UPDATE"""
+rframe = tk.Frame(root)
+
+# rframe_top = tk.Frame(rframe)
+# rframe_bottom = tk.Frame(rframe)
+
+# rframe_top.pack()
+# rframe_bottom.pack()
+
+r_proj_label = tk.Label(rframe, text="Project Name")
+r_usr_label = tk.Label(rframe, text="Username")
+r_soc_label = tk.Label(rframe, text="Social Media")
+r_time_label = tk.Label(rframe, text="Time")
+r_field_label = tk.Label(rframe, text="Fields")
+
+r_proj_entry = tk.Entry(rframe)
+r_usr_entry  = tk.Entry(rframe)
+r_soc_entry  = tk.Entry(rframe)
+r_time_entry = tk.Entry(rframe)
+r_field_entry = tk.Entry(rframe)
+
+r_proj_label.pack()
+r_proj_entry.pack()
+r_usr_label.pack()
+r_usr_entry.pack()
+r_soc_label.pack()
+r_soc_entry.pack()
+r_time_label.pack()
+r_time_entry.pack()
+r_field_label.pack()
+r_field_entry.pack()
+
+r_button = tk.Button(rframe, text="Update", command=r_submit)
+r_button.pack()
 
 """PROJECT INSERT FRAME"""
 pi_frame = tk.Frame(root)
 pi_label_frame = tk.Frame(pi_frame)
 pi_entry_frame = tk.Frame(pi_frame)
 
+p_entries = []
+
 pi_proj_label = tk.Label(pi_frame, text="PROJECT NAME")
 pi_proj_entry = tk.Entry(pi_frame)
 pi_proj_button = tk.Button(pi_frame, text="update posts", command=get_posts)
+pi_proj_submit = tk.Button(pi_frame, text="Submit", command=p_submit)
 
 pi_po_usr_label = tk.Label(pi_label_frame, text="POST USERNAME")
 pi_po_usr_entry = tk.Entry(pi_entry_frame)
@@ -225,6 +279,11 @@ pi_po_soc_entry = tk.Entry(pi_entry_frame)
 pi_po_time_label = tk.Label(pi_label_frame, text="POST TIME")
 pi_po_time_entry = tk.Entry(pi_entry_frame)
 
+p_entries.append(pi_proj_entry)
+p_entries.append(pi_po_usr_entry)
+p_entries.append(pi_po_soc_entry)
+p_entries.append(pi_po_time_entry)
+
 pi_proj_label.pack()
 pi_proj_entry.pack()
 
@@ -232,6 +291,7 @@ pi_label_frame.pack()
 pi_entry_frame.pack()
 
 pi_proj_button.pack(pady=20)
+pi_proj_submit.pack()
 
 pi_po_usr_label.pack(side="left", padx=40)
 pi_po_soc_label.pack(side="left",padx=40)
