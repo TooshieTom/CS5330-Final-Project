@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import datetime
 # import backend
 
 tables = {
@@ -173,7 +174,31 @@ def update_columns(*args):
         qframe_sub.pack()
         check_button.pack()
         q_entries[0] = q_columns_record_var            
-            
+
+
+def create_qtable(table, data):
+    tree_frame.pack_forget()
+    columns = tables[table]
+    # print(columns)
+    tree = ttk.Treeview(tree_frame, columns=columns, show="headings", height=5)
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, anchor="center")
+    for row in data:
+        tree.insert("", tk.END, values=row)
+    scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
+    tree.configure(yscroll=scrollbar.set)
+    tree.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+    tree_frame.pack()
+
+
+def temp_db(arr): 
+    x = [('Crimrun', 'Insta', datetime.datetime(1970, 1, 1, 0, 0, 1), None, None, None, None, None, None, None, None, None, None, None), 
+         ('Crimrun', 'Insta', datetime.datetime(2020, 5, 5, 0, 0, 1), None, None, None, None, None, None, None, None, None, None, None)]
+    return x
+
+
 def better_q_submit():
     selected_table = from_var.get()
     
@@ -186,6 +211,9 @@ def better_q_submit():
         submit.append(x)
         print(q_words[i], ": ", x)
     #Pass submit array
+    data = temp_db(submit)
+    create_qtable(selected_table, data)
+
                 
 def add_field():
     selected_table = from_var.get()
@@ -457,5 +485,10 @@ more_drop_op.pack()
 more_label_value.pack()
 more_entry_value.pack()
 
+"""TABLE"""
+tree_frame = tk.Frame(qframe)
+# apsdoifj = tk.Label(tree_frame, text="HOAIWEHFPOIADHFPOIA")
+# apsdoifj.pack()
+# tree = ttk.Treeview(tree_frame)
 
 root.mainloop()
