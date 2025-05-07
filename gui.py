@@ -219,7 +219,12 @@ def update_columns(*args):
 
 def create_qtable(table, data):
     tree_frame.pack_forget()
-    columns = tables[table]
+    if table == "Post":
+        columns = tables[table] + ["projects"]
+    else:
+        columns = tables[table]
+    # num_col = len(data[0])
+    # print(num_col)
 
     for widget in tree_frame.winfo_children():
         widget.destroy()
