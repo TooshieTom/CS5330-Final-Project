@@ -265,6 +265,8 @@ def create_qtable(table, data):
     tree_frame.pack_forget()
     if table == "Post":
         columns = tables[table] + ["projects"]
+    elif table == "Record":
+        columns = ["Project", "Text", "Fields", "Username", "Soc_Med", "Time_Posted", "Percentage"]
     else:
         columns = tables[table]
     # num_col = len(data[0])
@@ -302,7 +304,7 @@ def better_q_submit():
     #Pass submit array
     # data = temp_db(submit)#############################################################change line for database
     if selected_table == "Record" and submit[0] == "Project":
-        data = full_backend.query_experiments(selected_table,submit)
+        data = full_backend.query_projects(selected_table,submit)
     else:
         data = full_backend.query_post(selected_table,submit)
     create_qtable(selected_table, data)
