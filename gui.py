@@ -312,6 +312,8 @@ def better_q_submit():
     print(f"Table: {selected_table}")
     submit = []
     for i in range(len(q_entries)):
+        if isinstance(q_entries[i], tk.Frame):
+            continue
         x = q_entries[i].get()
         submit.append(x)
         print(q_words[i], ": ", x)
