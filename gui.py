@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime
-# import backend
-# import full_backend
+import backend
+import full_backend
 
 tables = {
     "User": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
@@ -269,10 +269,10 @@ def create_qtable(table, data):
         tree.column(col, anchor="center")
     for row in data:
         tree.insert("", tk.END, values=row)
-    scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
-    tree.configure(yscroll=scrollbar.set)
-    tree.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
+    scrollbar = ttk.Scrollbar(tree_frame, orient="horizontal", command=tree.xview)
+    tree.configure(xscroll=scrollbar.set)
+    tree.pack(side="top", fill="both", expand=True)
+    scrollbar.pack(side="bottom", fill="x")
     tree_frame.pack()
 
 
@@ -321,7 +321,8 @@ def better_q_submit():
         submit.append(x)
         print(q_words[i], ": ", x)
     #Pass submit array
-    data = temp_db(submit)#############################################################change line for database
+    # data = temp_db(submit)#############################################################change line for database
+    data = full_backend.query_post(selected_table,submit)
     create_qtable(selected_table, data)
 
                 
