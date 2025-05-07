@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime
-# import backend
-# import full_backend
+import backend
+import full_backend
 
 tables = {
     "User": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
@@ -92,17 +92,18 @@ def r_submit(*args): # Update record
     #can do the smae thing of saying if it was successful or not
     # table = "Record"
 
-    submit = []
+    entries = []
     for i in range(len(r_entries)):
         x = r_entries[i].get()
-        submit.append(x)
+        entries.append(x)
     ###FUNCTION CALL HERE
-    # if func == "success":
-    #     r_success.pack()
-    #     r_failed.pack_forget()
-    # else:
-    #     r_success.pack_forget()
-    #     r_failed.pack()
+    ec = backend.updateRecord(entries)
+    if ec == 1:
+        r_success.pack_forget()
+        r_failed.pack()
+    else:
+        r_success.pack()
+        r_failed.pack_forget()
 
 
 def i_table_frame(*args):
@@ -360,22 +361,23 @@ r_soc_entry  = tk.Entry(rframe)
 r_time_entry = tk.Entry(rframe)
 r_field_entry = tk.Entry(rframe)
 
+r_entries.append(r_field_entry)
 r_entries.append(r_proj_entry)
 r_entries.append(r_usr_entry)
 r_entries.append(r_soc_entry)
 r_entries.append(r_time_entry)
-r_entries.append(r_field_entry)
 
-r_proj_label.pack()
-r_proj_entry.pack()
+
 r_field_label.pack()
 r_field_entry.pack()
+r_proj_label.pack()
+r_proj_entry.pack()
 r_usr_label.pack()
 r_usr_entry.pack()
-r_time_label.pack()
-r_time_entry.pack()
 r_soc_label.pack()
 r_soc_entry.pack()
+r_time_label.pack()
+r_time_entry.pack()
 
 
 

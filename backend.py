@@ -326,13 +326,12 @@ def updateRecord(inputs): # Assuming in form of (username, soc_med, time_posted,
         cursor = conn.cursor()
 
         # Do pre-processing
-        query = "UPDATE record SET fields = %s WHERE username = %s AND soc_med = %s AND time_posted = %s AND project = %s"
+        query = "UPDATE record SET fields = %s WHERE project = %s AND username = %s AND soc_med = %s AND time_posted = %s"
         parameters = []
-        for i in range (len(inputs)-1):
-            parameters.append(inputs[i])
+        for i in inputs:
+            parameters.append(i)
 
-        print(query)
-        print(parameters)
+        print("Query:",query,"Parameters:", parameters)
 
         cursor.execute(query,parameters)
         conn.commit()
