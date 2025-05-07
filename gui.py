@@ -261,13 +261,13 @@ def update_columns(*args):
         q_entries[0] = q_columns_record_var            
 
 
-def create_qtable(table, data):
+def create_qtable(table, data, field=None):
     weird = False
     tree_frame.pack_forget()
     if table == "Post":
         columns = tables[table] + ["projects"]
-    elif table == "Record":
-        columns = ["Project", "Text", "Fields", "Username", "Soc_Med", "Time_Posted", "Percentage"]
+    elif table == "Record" and field != None:
+        columns = ["Project", "Username", "Time_Posted", "Soc_Med", "Fields", "Percentage"]
         weird = True
     else:
         columns = tables[table]
@@ -285,15 +285,26 @@ def create_qtable(table, data):
         for row in data:
             tree.insert("", tk.END, values=row)
     else:
-        for thing in data:
-            row = thing["project"] + thing["posts"] + thing["field_coverage"]
+        for row in data:
             tree.insert("", tk.END, values=row)
+
     yscrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
     xscrollbar = ttk.Scrollbar(tree_frame, orient="horizontal", command=tree.xview)
     tree.configure(yscroll=yscrollbar.set, xscroll=xscrollbar.set)
     tree.pack(side="top", fill="both", expand=True)
     yscrollbar.pack(side="right", fill="y")
     xscrollbar.pack(side="bottom", fill="x")
+
+    r = field.keys()
+    c = ["Field", "Percentage"]
+    per_tree = ttk.Treeview(tree_frame, columns=c, show="headings", height=5)
+    for i in r:
+        row = [i, field[i]]
+        tree.insert("", tk.END, values=row)
+
+    per_tree.pack(side="top", fill="both", expand=True)
+
+
     tree_frame.pack()
 
 
@@ -311,10 +322,10 @@ def better_q_submit():
     #Pass submit array
     # data = temp_db(submit)#############################################################change line for database
     if selected_table == "Record" and submit[0] == "Project" and len(submit) == 3:
-        data = full_backend.query_projects(submit[2])
+        data, field = full_backend.query_projects(submit[2])
     else:
         data = full_backend.query_post(selected_table,submit)
-    create_qtable(selected_table, data)
+    create_qtable(selected_table, data, field)
                 
 def add_field():
     selected_table = from_var.get()
