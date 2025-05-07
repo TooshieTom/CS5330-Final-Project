@@ -262,11 +262,13 @@ def update_columns(*args):
 
 
 def create_qtable(table, data):
+    weird = False
     tree_frame.pack_forget()
     if table == "Post":
         columns = tables[table] + ["projects"]
     elif table == "Record":
         columns = ["Project", "Text", "Fields", "Username", "Soc_Med", "Time_Posted", "Percentage"]
+        weird = True
     else:
         columns = tables[table]
     # num_col = len(data[0])
@@ -279,8 +281,12 @@ def create_qtable(table, data):
     for col in columns:
         tree.heading(col, text=col)
         tree.column(col, anchor="center")
-    for row in data:
-        tree.insert("", tk.END, values=row)
+    if not weird:
+        for row in data:
+            tree.insert("", tk.END, values=row)
+    else:
+        for thing in data:
+            row = thing["project"] + thing["post"] + thing["field_coverage"]
     yscrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
     xscrollbar = ttk.Scrollbar(tree_frame, orient="horizontal", command=tree.xview)
     tree.configure(yscroll=yscrollbar.set, xscroll=xscrollbar.set)
