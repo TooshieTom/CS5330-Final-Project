@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime
-import backend
-import full_backend
+# import backend
+# import full_backend
 
 tables = {
     "User": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
@@ -40,6 +40,7 @@ def IQ_change_frame(*args):
         qframe.pack_forget()
         pi_frame.pack_forget()
         rframe.pack()
+        create_rtrable()
 
 def create_ptable(data):
     # table = "Post"
@@ -56,7 +57,7 @@ def create_ptable(data):
         tree.column(col, anchor="center")
     for row in data:
         tree.insert("", tk.END, values=row)
-    scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
+    scrollbar = ttk.Scrollbar(P_tree_frame, orient="vertical", command=tree.yview)
     tree.configure(yscroll=scrollbar.set)
     tree.pack(side="left", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
@@ -86,6 +87,30 @@ def p_submit(*args): # Insert record
     entries.insert(1,"")
     print(entries)
     backend.enterTuple(entries)
+
+def create_rtrable():
+    data = full_backend.getAll("Record")
+
+    columns = tables["Record"]
+
+    r_tree_frame.pack_forget()
+
+    for widget in r_tree_frame.winfo_children():
+        widget.destroy()
+    
+    tree = ttk.Treeview(r_tree_frame, columns=columns, show="headings", height=5)
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, anchor="center")
+    for row in data:
+        tree.insert("", tk.END, values=row)
+    scrollbar = ttk.Scrollbar(r_tree_frame, orient="vertical", command=tree.yview)
+    tree.configure(yscroll=scrollbar.set)
+    tree.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+    r_tree_frame.pack()
+
+
 
 
 def r_submit(*args): # Update record
@@ -341,6 +366,7 @@ rframe = tk.Frame(root)
 
 # rframe_top = tk.Frame(rframe)
 # rframe_bottom = tk.Frame(rframe)
+r_tree_frame = tk.Frame(rframe)
 
 # rframe_top.pack()
 # rframe_bottom.pack()
