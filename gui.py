@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime
-import backend
-import full_backend
+# import backend
+# import full_backend
 
 tables = {
     "User": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
@@ -203,10 +203,17 @@ def i_submit(*args):
     #     failed.pack_forget()
     #     success.pack()
 
+def destroy_field():
+    for widget in qframe_sub.winfo_children():
+        if isinstance(widget, tk.Frame):
+            for another_widget in widget.winfo_children():
+                another_widget.destroy()
+            widget.destroy()
 
 def update_columns(*args):
     tree_frame.pack_forget()
     x = from_var.get()
+    destroy_field()
     # q_entries.clear()
     if x == "User":
         check_button.pack_forget()
@@ -294,9 +301,11 @@ def better_q_submit():
         print(q_words[i], ": ", x)
     #Pass submit array
     # data = temp_db(submit)#############################################################change line for database
-    data = full_backend.query_post(selected_table,submit)
+    if selected_table == "Record" and submit[0] == "Project":
+        data = full_backend.query_experiments(selected_table,submit)
+    else:
+        data = full_backend.query_post(selected_table,submit)
     create_qtable(selected_table, data)
-
                 
 def add_field():
     selected_table = from_var.get()
