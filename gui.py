@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import datetime
-import backend
-import full_backend
+# import backend
+# import full_backend
 
 tables = {
     "User": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
@@ -368,14 +368,16 @@ r_entries.append(r_field_entry)
 
 r_proj_label.pack()
 r_proj_entry.pack()
-r_usr_label.pack()
-r_usr_entry.pack()
-r_soc_label.pack()
-r_soc_entry.pack()
-r_time_label.pack()
-r_time_entry.pack()
 r_field_label.pack()
 r_field_entry.pack()
+r_usr_label.pack()
+r_usr_entry.pack()
+r_time_label.pack()
+r_time_entry.pack()
+r_soc_label.pack()
+r_soc_entry.pack()
+
+
 
 r_button = tk.Button(rframe, text="Update", command=r_submit)
 r_button.pack()
