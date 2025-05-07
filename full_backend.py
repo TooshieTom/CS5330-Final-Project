@@ -467,17 +467,18 @@ def query_projects(project_name):
             use_pure=True
         )
 
-            # Create a cursor object
-        cursor = conn.cursor()
+        # Create a cursor object
+        cursor = conn.cursor(dictionary=True)
+
 
         # cursor.execute("""
         #     SELECT * FROM %s WHERE Project_Name = %s
         # """, (table,project_name,))
         cursor.execute("""
-            SELECT * FROM Record WHERE Project_Name = %s
+            SELECT * FROM Record WHERE Project = %s
         """, (project_name,))
         records = cursor.fetchall()
-
+        # print("Records:",records)
         if not records:
             return {
                 "message": f"No posts found for project '{project_name}'.",
@@ -520,99 +521,24 @@ def query_projects(project_name):
             for field, count in field_counts.items()
         }
 
-        return {
-            "project": project_name,
-            "posts": posts,
-            "field_coverage": field_coverage
+        info = {
+             "project": project_name,
+             "posts": posts,
+             "field_coverage": field_coverage
         }
-
-    except Exception as e:
-        print(f"Error querying project data: {e}")
-        return {
-            "error": str(e),
-            "posts": [],
-            "field_coverage": {}
-        }
-    finally:
-        if conn:
-            conn.close()
-
-def query_experiments(project_name):
-    load_dotenv()
-
-    # Retrieve values
-    db_user = os.getenv("DB_USER")
-    db_password = os.getenv("DB_PASSWORD")
-    try:
-        # Establish connection
-        conn = mysql.connector.connect(
-            host="127.0.0.1",
-            user=db_user,
-            password=db_password,
-            database="postdb",
-            connection_timeout=5,  # force error if hangs
-            auth_plugin="caching_sha2_password",
-            use_pure=True
-        )
-
-            # Create a cursor object
-        cursor = conn.cursor()
-
-        # cursor.execute("""
-        #     SELECT * FROM %s WHERE Project_Name = %s
-        # """, (table,project_name,))
-        cursor.execute("""
-            SELECT * FROM Record WHERE Project_Name = %s
-        """, (project_name,))
-        records = cursor.fetchall()
-
-        if not records:
-            return {
-                "message": f"No posts found for project '{project_name}'.",
-                "posts": [],
-                "field_coverage": {}
-            }
-
-        posts = []
-        field_counts = defaultdict(int)
-
-        for record in records:
-
-            raw_fields = record.get('Fields')
-            try:
-                fields = json.loads(raw_fields) if isinstance(raw_fields, str) else raw_fields
-            except Exception as e:
-                print(f"Error parsing fields for record {record.get('ID', 'unknown')}: {e}")
-                fields = {}
-
-            for key in fields:
-                field_counts[key] += 1
-
-            post_entry = {
-                "Record_Identifier": {
-                    "Project": record.get("Project"),
-                    "Username": record.get("Username"),
-                    "Time_Posted": str(record.get("Time_Posted")), 
-                    "Soc_Med": record.get("Soc_Med")
-                },
-                "Fields": fields
-            }
-
-            posts.append(post_entry)
-
-        total_posts = len(posts)
-
-
-        field_coverage = {
-            field: round((count / total_posts) * 100, 2)
-            for field, count in field_counts.items()
-        }
-
-        return {
-            "project": project_name,
-            "posts": posts,
-            "field_coverage": field_coverage
-        }
+        data = info["posts"]
+        Tuples = [
+            (
+                rec['Record_Identifier']['Project'],
+                rec['Record_Identifier']['Username'],
+                rec['Record_Identifier']['Time_Posted'],
+                rec['Record_Identifier']['Soc_Med'],
+                json.dumps(rec['Fields'])       # if you need JSON text
+            )
+            for rec in data
+        ]
+        
+        return Tuples, field_coverage
 
     except Exception as e:
         print(f"Error querying project data: {e}")
@@ -629,7 +555,9 @@ def query_experiments(project_name):
 
 def main():
     # clearTuples()
-    input = ['Pooper', 'Scooper', '1970-02-01 00:00:01', '', '', '','','','','-1','','','']
+    # print(tuples)
+    tuples = query_projects("Skibidi")
+    print(tuples)
     # enterTuple(input)
 
 main()
