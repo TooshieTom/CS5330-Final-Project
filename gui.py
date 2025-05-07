@@ -311,12 +311,16 @@ def better_q_submit():
                "Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value"]
     print(f"Table: {selected_table}")
     submit = []
-    for i in range(len(q_entries)):
-        if isinstance(q_entries[i], tk.Frame):
+    # for i in range(len(q_entries)):
+    #     if isinstance(q_entries[i], tk.Frame):
+    #         continue
+    #     x = q_entries[i].get()
+    #     submit.append(x)
+    for i in q_entries:
+        if isinstance(i, tk.Frame):
             continue
-        x = q_entries[i].get()
-        submit.append(x)
-        print(q_words[i], ": ", x)
+        submit.append(i.get())
+        # print(q_words[i], ": ", x)
     #Pass submit array
     # data = temp_db(submit)#############################################################change line for database
     if selected_table == "Record" and submit[0] == "Project" and len(submit) == 3:
