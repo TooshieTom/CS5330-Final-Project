@@ -262,13 +262,11 @@ def update_columns(*args):
 
 
 def create_qtable(table, data, field=None):
-    weird = False
     tree_frame.pack_forget()
     if table == "Post":
         columns = tables[table] + ["projects"]
     elif table == "Record" and field != None:
-        columns = ["Project", "Username", "Time_Posted", "Soc_Med", "Fields", "Percentage"]
-        weird = True
+        columns = ["Project", "Username", "Time_Posted", "Soc_Med", "Fields"]
     else:
         columns = tables[table]
     # num_col = len(data[0])
@@ -281,12 +279,9 @@ def create_qtable(table, data, field=None):
     for col in columns:
         tree.heading(col, text=col)
         tree.column(col, anchor="center")
-    if not weird:
-        for row in data:
-            tree.insert("", tk.END, values=row)
-    else:
-        for row in data:
-            tree.insert("", tk.END, values=row)
+
+    for row in data:
+        tree.insert("", tk.END, values=row)
 
     yscrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
     xscrollbar = ttk.Scrollbar(tree_frame, orient="horizontal", command=tree.xview)
@@ -295,14 +290,18 @@ def create_qtable(table, data, field=None):
     yscrollbar.pack(side="right", fill="y")
     xscrollbar.pack(side="bottom", fill="x")
 
-    r = field.keys()
-    c = ["Field", "Percentage"]
-    per_tree = ttk.Treeview(tree_frame, columns=c, show="headings", height=5)
-    for i in r:
-        row = [i, field[i]]
-        tree.insert("", tk.END, values=row)
+    if field:
+        r = field.keys()
+        c = ["Field", "Percentage"]
+        per_tree = ttk.Treeview(tree_frame, columns=c, show="headings", height=5)
+        for col in c:
+            per_tree.heading(col, text=col)
+            per_tree.column(col, anchor="center")
+        for i in r:
+            row = [i, field[i]]
+            per_tree.insert("", tk.END, values=row)
 
-    per_tree.pack(side="top", fill="both", expand=True)
+        per_tree.pack(side="top", fill="both", expand=True, pady=20)
 
 
     tree_frame.pack()
@@ -323,9 +322,12 @@ def better_q_submit():
     # data = temp_db(submit)#############################################################change line for database
     if selected_table == "Record" and submit[0] == "Project" and len(submit) == 3:
         data, field = full_backend.query_projects(submit[2])
+        # data = [("words", "more", "words", "here", "words")]
+        # field = {"Things": 100}
+        create_qtable(selected_table, data, field)
     else:
         data = full_backend.query_post(selected_table,submit)
-    create_qtable(selected_table, data, field)
+        create_qtable(selected_table, data)
                 
 def add_field():
     selected_table = from_var.get()
