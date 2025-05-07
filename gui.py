@@ -40,7 +40,6 @@ def IQ_change_frame(*args):
         pi_frame.pack_forget()
         rframe.pack()
 
-
 def create_ptable(data):
     # table = "Post"
     columns = ["Usernam", "Social Media", "Time"]
@@ -63,16 +62,15 @@ def create_ptable(data):
     P_tree_frame.pack()
 
 def get_posts():
-    name = pi_proj_entry.get()
-    print(name)
+    # name = pi_proj_entry.get()
+    # print(name)
     post_data = [
             ("jdoe92", "Twitter", "2025-04-01 12:34:00", "New York", "NY", "USA", "Image", "John", "Doe", 120, 5, "Loving this weather!", True, "2025-04-01 12:34:00"),
             ("asmith88", "Instagram", "2025-03-25 09:15:00", "Toronto", "ON", "Canada", "Video", "Alice", "Smith", 300, 2, "Morning workout done!", True, "2025-03-25 09:15:00"),
         ]
+    #FUNCTION CALL HERE
     create_ptable(post_data)
 
-    #send query to retrieve all posts
-    #get (SELECT username, soc_med, time_posted FROM post)
 
 def p_submit(*args):
     entries = []
@@ -80,10 +78,24 @@ def p_submit(*args):
         entries.append(i.get())
         print(i.get())
         i.delete(0,tk.END)
+    ###FUNCTION CALL HERE
 
 def r_submit(*args):
     #can do the smae thing of saying if it was successful or not
-    pass
+    # table = "Record"
+
+    submit = []
+    for i in range(len(r_entries)):
+        x = r_entries[i].get()
+        submit.append(x)
+    ###FUNCTION CALL HERE
+    # if func == "success":
+    #     r_success.pack()
+    #     r_failed.pack_forget()
+    # else:
+    #     r_success.pack_forget()
+    #     r_failed.pack()
+
 
 def i_table_frame(*args):
     x = i_table_drop_var.get()
@@ -318,6 +330,10 @@ rframe = tk.Frame(root)
 
 # rframe_top.pack()
 # rframe_bottom.pack()
+r_entries = []
+
+r_failed = tk.Label(rframe, text="FAILED")
+r_success = tk.Label(rframe, text="SUCCESS")
 
 r_proj_label = tk.Label(rframe, text="Project Name")
 r_usr_label = tk.Label(rframe, text="Username")
@@ -330,6 +346,12 @@ r_usr_entry  = tk.Entry(rframe)
 r_soc_entry  = tk.Entry(rframe)
 r_time_entry = tk.Entry(rframe)
 r_field_entry = tk.Entry(rframe)
+
+r_entries.append(r_proj_entry)
+r_entries.append(r_usr_entry)
+r_entries.append(r_soc_entry)
+r_entries.append(r_time_entry)
+r_entries.append(r_field_entry)
 
 r_proj_label.pack()
 r_proj_entry.pack()
