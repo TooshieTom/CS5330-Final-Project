@@ -205,6 +205,7 @@ def i_submit(*args):
 
 
 def update_columns(*args):
+    tree_frame.pack_forget()
     x = from_var.get()
     # q_entries.clear()
     if x == "User":

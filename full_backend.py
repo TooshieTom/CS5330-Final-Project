@@ -449,14 +449,102 @@ def query_post(table,columns: list):
             if conn:
                 conn.close()
 
-def query_projects(table, project_name):
+def query_projects(project_name):
     load_dotenv()
 
-        # Retrieve values
+    # Retrieve values
     db_user = os.getenv("DB_USER")
     db_password = os.getenv("DB_PASSWORD")
     try:
-            # Establish connection
+        # Establish connection
+        conn = mysql.connector.connect(
+            host="127.0.0.1",
+            user=db_user,
+            password=db_password,
+            database="postdb",
+            connection_timeout=5,  # force error if hangs
+            auth_plugin="caching_sha2_password",
+            use_pure=True
+        )
+
+            # Create a cursor object
+        cursor = conn.cursor()
+
+        # cursor.execute("""
+        #     SELECT * FROM %s WHERE Project_Name = %s
+        # """, (table,project_name,))
+        cursor.execute("""
+            SELECT * FROM Record WHERE Project_Name = %s
+        """, (project_name,))
+        records = cursor.fetchall()
+
+        if not records:
+            return {
+                "message": f"No posts found for project '{project_name}'.",
+                "posts": [],
+                "field_coverage": {}
+            }
+
+        posts = []
+        field_counts = defaultdict(int)
+
+        for record in records:
+
+            raw_fields = record.get('Fields')
+            try:
+                fields = json.loads(raw_fields) if isinstance(raw_fields, str) else raw_fields
+            except Exception as e:
+                print(f"Error parsing fields for record {record.get('ID', 'unknown')}: {e}")
+                fields = {}
+
+            for key in fields:
+                field_counts[key] += 1
+
+            post_entry = {
+                "Record_Identifier": {
+                    "Project": record.get("Project"),
+                    "Username": record.get("Username"),
+                    "Time_Posted": str(record.get("Time_Posted")), 
+                    "Soc_Med": record.get("Soc_Med")
+                },
+                "Fields": fields
+            }
+
+            posts.append(post_entry)
+
+        total_posts = len(posts)
+
+
+        field_coverage = {
+            field: round((count / total_posts) * 100, 2)
+            for field, count in field_counts.items()
+        }
+
+        return {
+            "project": project_name,
+            "posts": posts,
+            "field_coverage": field_coverage
+        }
+
+    except Exception as e:
+        print(f"Error querying project data: {e}")
+        return {
+            "error": str(e),
+            "posts": [],
+            "field_coverage": {}
+        }
+    finally:
+        if conn:
+            conn.close()
+
+def query_experiments(project_name):
+    load_dotenv()
+
+    # Retrieve values
+    db_user = os.getenv("DB_USER")
+    db_password = os.getenv("DB_PASSWORD")
+    try:
+        # Establish connection
         conn = mysql.connector.connect(
             host="127.0.0.1",
             user=db_user,
