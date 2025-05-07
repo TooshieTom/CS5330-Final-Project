@@ -57,10 +57,12 @@ def create_ptable(data):
         tree.column(col, anchor="center")
     for row in data:
         tree.insert("", tk.END, values=row)
-    scrollbar = ttk.Scrollbar(P_tree_frame, orient="vertical", command=tree.yview)
-    tree.configure(yscroll=scrollbar.set)
-    tree.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
+    yscrollbar = ttk.Scrollbar(P_tree_frame, orient="vertical", command=tree.yview)
+    xscrollbar = ttk.Scrollbar(P_tree_frame, orient="horizontal", command=tree.xview)
+    tree.configure(yscroll=yscrollbar.set, xscroll=xscrollbar.set)
+    tree.pack(side="top", fill="both", expand=True)
+    yscrollbar.pack(side="right", fill="y")
+    xscrollbar.pack(side="bottom", fill='x')
     P_tree_frame.pack()
 
 def get_posts():
@@ -104,13 +106,13 @@ def create_rtrable():
         tree.column(col, anchor="center")
     for row in data:
         tree.insert("", tk.END, values=row)
-    scrollbar = ttk.Scrollbar(r_tree_frame, orient="vertical", command=tree.yview)
-    tree.configure(yscroll=scrollbar.set)
-    tree.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
+    yscrollbar = ttk.Scrollbar(r_tree_frame, orient="vertical", command=tree.yview)
+    xscrollbar = ttk.Scrollbar(r_tree_frame, orient="horizontal", command=tree.xview)
+    tree.configure(yscroll=yscrollbar.set, xscroll=xscrollbar.set)
+    tree.pack(side="top", fill="both", expand=True)
+    yscrollbar.pack(side="right", fill="y")
+    xscrollbar.pack(side="bottom", fill='x')
     r_tree_frame.pack()
-
-
 
 
 def r_submit(*args): # Update record
@@ -269,44 +271,13 @@ def create_qtable(table, data):
         tree.column(col, anchor="center")
     for row in data:
         tree.insert("", tk.END, values=row)
-    scrollbar = ttk.Scrollbar(tree_frame, orient="horizontal", command=tree.xview)
-    tree.configure(xscroll=scrollbar.set)
+    yscrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
+    xscrollbar = ttk.Scrollbar(tree_frame, orient="horizontal", command=tree.xview)
+    tree.configure(yscroll=yscrollbar.set, xscroll=xscrollbar.set)
     tree.pack(side="top", fill="both", expand=True)
-    scrollbar.pack(side="bottom", fill="x")
+    yscrollbar.pack(side="right", fill="y")
+    xscrollbar.pack(side="bottom", fill="x")
     tree_frame.pack()
-
-
-def temp_db(arr): 
-    x = from_var.get()
-    if x == "User":
-        # User table
-        user_data = [
-            ("jdoe92", "Twitter", "John Doe", True, "USA", "UK", 31, "Male"),
-            ("asmith88", "Instagram", "Alice Smith", False, "Canada", "Canada", 29, "Female"),
-        ]
-        return user_data
-    elif x == "Post":
-        # Post table
-        post_data = [
-            ("jdoe92", "Twitter", "2025-04-01 12:34:00", "New York", "NY", "USA", "Image", "John", "Doe", 120, 5, "Loving this weather!", True, "2025-04-01 12:34:00"),
-            ("asmith88", "Instagram", "2025-03-25 09:15:00", "Toronto", "ON", "Canada", "Video", "Alice", "Smith", 300, 2, "Morning workout done!", True, "2025-03-25 09:15:00"),
-        ]
-        return post_data
-    elif x == "Project":
-        # Project table
-        project_data = [
-            ("GreenTech", "Emma Wilson", "EcoLab Inc.", "2023-01-15", "2024-12-31"),
-            ("AI4Good", "Daniel Chen", "TechU Research", "2022-09-01", "2025-05-30"),
-        ]
-        return project_data
-    elif x == "Record":
-        # Record table
-        record_data = [
-            ("GreenTech", "Installed solar panels in three locations.", "energy, sustainability", "jdoe92", "2024-11-22 10:00:00", "Twitter"),
-            ("AI4Good", "Developed a sentiment analysis tool.", "AI, NLP", "asmith88", "2025-01-05 14:45:00", "Instagram"),
-        ]
-        return record_data
-    return x
 
 
 def better_q_submit():
