@@ -189,19 +189,16 @@ def i_submit(*args):
     for i in i_entries:
         entries.append(i.get())
         i.delete(0, tk.END)
-    for i in range(len(entries)):
-        print(tables[x][i], ": ", entries[i])
 
     # backend call to actually query db for insert
-    # ec = backend.enterTuple(entries)
-    # ec = 1
-    # if ec == 1:
-    #     # show input invalid
-    #     failed.pack()
-    #     success.pack_forget()
-    # else:
-    #     failed.pack_forget()
-    #     success.pack()
+    ec = backend.enterTuple(entries)
+    if ec == 1:
+        # show input invalid
+        failed.pack()
+        success.pack_forget()
+    else:
+        failed.pack_forget()
+        success.pack()
 
 def destroy_field():
     for widget in qframe_sub.winfo_children():
