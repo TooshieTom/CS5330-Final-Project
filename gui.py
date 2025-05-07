@@ -206,8 +206,7 @@ def destroy_field():
             for another_widget in widget.winfo_children():
                 another_widget.destroy()
             widget.destroy()
-        else:
-            widget.destroy()
+        
 
 def update_columns(*args):
     tree_frame.pack_forget()
