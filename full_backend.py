@@ -1,11 +1,9 @@
 import mysql.connector as mysql
 import mysql.connector.errors
 import os
-import csv
 from dotenv import load_dotenv
 import json
 from collections import defaultdict
-import os
 import mysql.connector
 from mysql.connector import Error
 from typing import Optional
@@ -68,7 +66,7 @@ def makeTable(cursor):
        Text TEXT,
        Fields JSON,
        Username VARCHAR(40) NOT NULL,
-       Time_Posted DATE NOT NULL,
+       Time_Posted TIMESTAMP NOT NULL,
        Soc_Med VARCHAR(50) NOT NULL,
         PRIMARY KEY(Project,Username,Soc_Med,Time_Posted),
        FOREIGN KEY (Project) REFERENCES Project(Name)
@@ -99,13 +97,13 @@ def clearTuples():
         cursor = conn.cursor()
         makeTable(cursor)
 
-        cursor.execute("DELETE FROM User;")
+        # cursor.execute("DELETE FROM User;")
 
-        cursor.execute("DELETE FROM Post;")
+        # cursor.execute("DELETE FROM Post;")
         
-        cursor.execute("DELETE FROM Project;")
+        # cursor.execute("DELETE FROM Project;")
 
-        cursor.execute("DELETE FROM Record;")
+        # cursor.execute("DELETE FROM Record;")
 
 
     except mysql.connector.Error as err:
@@ -324,29 +322,29 @@ def query_post(table,columns: list):
             # Create a cursor object
             cursor = conn.cursor()
             query = ""
+            isPost = False
             if table == "User":
                 query = """
                     SELECT *
                     FROM User
-                    WHERE 1=1
+                    WHERE 
                     """
             elif table == "Post":
-                query = """
-                    SELECT *
-                    FROM Post
-                    WHERE 1=1
+                query = """SELECT * FROM Post WHERE 
                     """
+                isPost = True
+                
             elif table == "Project":
                 query = """
                     SELECT *
                     FROM Project
-                    WHERE 1=1
+                    WHERE 
                     """
             elif table == "Record":
                 query = """
                     SELECT *
                     FROM Record
-                    WHERE 1=1
+                    WHERE 
                     """
             else:
                 print(f"{table} is an invalid table")
@@ -354,31 +352,45 @@ def query_post(table,columns: list):
             # parameters.append(table)
             if(len(columns)%3==0):
                 for i in range(0,len(columns)//3):
+                    query += columns[3*i]
                     if(columns[3*i+1]=="<"):
-                        query+= "%s < %s"
+                        query+= " < %s AND "
                     elif(columns[3*i+1]==">"):
-                        query+= "%s > %s"
-                    elif(columns[3*i+1]=="=="):
-                        query+= "%s == %s"
+                        query+= " > %s AND "
+                    elif(columns[3*i+1]=="="):
+                        query+= " = %s AND "
                     elif(columns[3*i+1]==">="):
-                        query+= "%s >= %s"
+                        query+= " >= %s AND "
                     elif(columns[3*i+1]=="<="):
-                        query+= "%s > %s"
+                        query+= " <= %s AND "
                     elif(columns[3*i+1]=="!="):
-                        query+= "%s > %s"
+                        query+= " != %s AND "
                     else:
                         print("{columns[3*i+1]} is an invalid operator.")
-                    parameters.append(columns[i*3])
                     parameters.append(columns[3*i+2])
             else:
                 print("Error: Weird amount of items in the column list")
 
+            query = query[:-4]
+            # print(query,parameters)
             cursor.execute(query, parameters)
-            results = cursor.fetchall()
-            return results
+            p_results = cursor.fetchall()
+            # print("Query results:",p_results)
+            # need to append to each post the projects they're a part of
+            if isPost:
+                query2 = "SELECT project FROM record WHERE username = %s AND soc_med = %s AND time_posted = %s"
+                for idx, r in enumerate(p_results):
+                    params = [r[i] for i in range(3)]
+                    cursor.execute(query2, params)
+                    names = cursor.fetchall()
+                    combined = ", ".join(f"project:{name[0]}" for name in names)
+                    p_results[idx] = r + (combined,)
+
+            print(p_results)
+            return p_results
         except Exception as e:
             print(f"Error querying posts: {e}")
-            return []
+            return 1
         finally:
             if conn:
                 conn.close()

@@ -1,7 +1,7 @@
 import mysql.connector as mysql
 import mysql.connector.errors
 import os
-import csv
+import json
 from dotenv import load_dotenv
 
     
@@ -62,7 +62,7 @@ def makeTable(cursor):
        Text TEXT,
        Fields JSON,
        Username VARCHAR(40) NOT NULL,
-       Time_Posted DATE NOT NULL,
+       Time_Posted TIMESTAMP NOT NULL,
        Soc_Med VARCHAR(50) NOT NULL,
         PRIMARY KEY(Project,Username,Soc_Med,Time_Posted),
        FOREIGN KEY (Project) REFERENCES Project(Name)
@@ -93,13 +93,13 @@ def clearTuples():
         cursor = conn.cursor()
         makeTable(cursor)
 
-        cursor.execute("DELETE FROM User;")
+        # cursor.execute("DELETE FROM User;")
 
-        cursor.execute("DELETE FROM Post;")
+        # cursor.execute("DELETE FROM Post;")
         
-        cursor.execute("DELETE FROM Project;")
+        # cursor.execute("DELETE FROM Project;")
 
-        cursor.execute("DELETE FROM Record;")
+        # cursor.execute("DELETE FROM Record;")
 
 
     except mysql.connector.Error as err:
@@ -212,6 +212,12 @@ def enterTuple(inputs):
                     query += "text, "
                 elif i == 2:
                     query += "fields, "
+                    # json stuff
+                    json_input = json.loads(inputs[i])  # raises ValueError if malformed
+                    json_data = json.dumps(json_input)          # serialize to store in DB
+                    num_inputs += 1
+                    parameters.append(json_data)
+                    continue
                 elif i == 3:
                     query += "username, "
                 elif i == 4:
@@ -281,7 +287,64 @@ def enterTuple(inputs):
         return 1
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-        return
+        return 
+    finally:
+        # Close the cursor
+        if cursor is not None: 
+            try:
+                cursor.close()  
+            except Exception as e:
+                print(f"Unexpected error while closing cursor: {e}")
+        # Close the connection
+        if conn is not None:
+            try:
+                conn.close()  
+                # print("Database connection closed.")
+            except Exception as e:
+                print(f"Unexpected error while closing connection: {e}")
+
+def updateRecord(inputs): # Assuming in form of (username, soc_med, time_posted, project)
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Retrieve values
+    db_user = os.getenv("DB_USER")
+    db_password = os.getenv("DB_PASSWORD")
+    try:
+        # Establish connection
+        conn = mysql.connector.connect(
+            host="127.0.0.1",
+            user=db_user,
+            password=db_password,
+            database="postdb",
+            connection_timeout=5,  # force error if hangs
+            auth_plugin="caching_sha2_password",
+            use_pure=True
+        )
+
+        # Create a cursor object
+        cursor = conn.cursor()
+
+        # Do pre-processing
+        query = "UPDATE record SET fields = %s WHERE username = %s AND soc_med = %s AND time_posted = %s AND project = %s"
+        parameters = []
+        for i in range (len(inputs)-1):
+            parameters.append(inputs[i])
+
+        print(query)
+        print(parameters)
+
+        cursor.execute(query,parameters)
+        conn.commit()
+
+
+
+    except mysql.connector.Error as err:
+        print("Input Invalid")
+        return 1
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        return 1
     finally:
         # Close the cursor
         if cursor is not None: 
@@ -299,7 +362,7 @@ def enterTuple(inputs):
 
 
 def main():
-    # clearTuples()
+    clearTuples()
     input = ['Pooper', 'Scooper', '1970-02-01 00:00:01', '', '', '','','','','-1','','','']
     # enterTuple(input)
 
