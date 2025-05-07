@@ -40,10 +40,37 @@ def IQ_change_frame(*args):
         pi_frame.pack_forget()
         rframe.pack()
 
+
+def create_ptable(data):
+    # table = "Post"
+    columns = ["Usernam", "Social Media", "Time"]
+
+    P_tree_frame.pack_forget()
+
+    for widget in P_tree_frame.winfo_children():
+        widget.destroy()
+    
+    tree = ttk.Treeview(P_tree_frame, columns=columns, show="headings", height=5)
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, anchor="center")
+    for row in data:
+        tree.insert("", tk.END, values=row)
+    scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
+    tree.configure(yscroll=scrollbar.set)
+    tree.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+    P_tree_frame.pack()
+
 def get_posts():
     name = pi_proj_entry.get()
     print(name)
-    
+    post_data = [
+            ("jdoe92", "Twitter", "2025-04-01 12:34:00", "New York", "NY", "USA", "Image", "John", "Doe", 120, 5, "Loving this weather!", True, "2025-04-01 12:34:00"),
+            ("asmith88", "Instagram", "2025-03-25 09:15:00", "Toronto", "ON", "Canada", "Video", "Alice", "Smith", 300, 2, "Morning workout done!", True, "2025-03-25 09:15:00"),
+        ]
+    create_ptable(post_data)
+
     #send query to retrieve all posts
     #get (SELECT username, soc_med, time_posted FROM post)
 
@@ -522,5 +549,9 @@ tree_frame = tk.Frame(qframe)
 # apsdoifj = tk.Label(tree_frame, text="HOAIWEHFPOIADHFPOIA")
 # apsdoifj.pack()
 # tree = ttk.Treeview(tree_frame)
+
+"""Project page table"""
+P_tree_frame = tk.Frame(pi_frame)
+
 
 root.mainloop()
