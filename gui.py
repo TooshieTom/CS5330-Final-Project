@@ -318,10 +318,17 @@ def better_q_submit():
     #     x = q_entries[i].get()
     #     submit.append(x)
     for i in q_entries:
-        if isinstance(i, tk.Frame):
-            continue
+        # if isinstance(i, tk.Frame):
+        #     continue
+        # else:
+        #     submit.append(i.get())
+        if isinstance(i, tk.Entry):
+            value = i.get()
+        elif isinstance(i, tk.StringVar):
+            value = i.get()
         else:
-            submit.append(i.get())
+            continue
+        submit.append(value)
         # print(q_words[i], ": ", x)
     #Pass submit array
     # data = temp_db(submit)#############################################################change line for database
