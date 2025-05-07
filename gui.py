@@ -206,6 +206,8 @@ def destroy_field():
             for another_widget in widget.winfo_children():
                 another_widget.destroy()
             widget.destroy()
+        else:
+            widget.destroy()
 
 def update_columns(*args):
     tree_frame.pack_forget()
@@ -319,7 +321,8 @@ def better_q_submit():
     for i in q_entries:
         if isinstance(i, tk.Frame):
             continue
-        submit.append(i.get())
+        else:
+            submit.append(i.get())
         # print(q_words[i], ": ", x)
     #Pass submit array
     # data = temp_db(submit)#############################################################change line for database
