@@ -62,8 +62,8 @@ def makeTable(cursor):
        Text TEXT,
        Fields JSON,
        Username VARCHAR(40) NOT NULL,
-       Time_Posted TIMESTAMP NOT NULL,
        Soc_Med VARCHAR(50) NOT NULL,
+       Time_Posted TIMESTAMP NOT NULL,
         PRIMARY KEY(Project,Username,Soc_Med,Time_Posted),
        FOREIGN KEY (Project) REFERENCES Project(Name)
    );
@@ -221,9 +221,9 @@ def enterTuple(inputs):
                 elif i == 3:
                     query += "username, "
                 elif i == 4:
-                    query += "time_posted, "
-                elif i == 5:
                     query += "soc_med, "
+                elif i == 5:
+                    query += "time_posted, "
                 num_inputs += 1
                 parameters.append(inputs[i])
         else:
@@ -362,7 +362,7 @@ def updateRecord(inputs): # Assuming in form of (username, soc_med, time_posted,
 
 
 def main():
-    clearTuples()
+    # clearTuples()
     input = ['Pooper', 'Scooper', '1970-02-01 00:00:01', '', '', '','','','','-1','','','']
     # enterTuple(input)
 

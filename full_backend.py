@@ -301,6 +301,60 @@ def enterTuple(inputs):
             except Exception as e:
                 print(f"Unexpected error while closing connection: {e}")
 
+def getAll(table):
+        load_dotenv()
+
+        # Retrieve values
+        db_user = os.getenv("DB_USER")
+        db_password = os.getenv("DB_PASSWORD")
+        try:
+            # Establish connection
+            conn = mysql.connector.connect(
+                host="127.0.0.1",
+                user=db_user,
+                password=db_password,
+                database="postdb",
+                connection_timeout=5,  # force error if hangs
+                auth_plugin="caching_sha2_password",
+                use_pure=True
+            )
+
+            # Create a cursor object
+            cursor = conn.cursor()
+            query = ""
+            if table == "User":
+                query = """
+                    SELECT *
+                    FROM User
+                    """
+            elif table == "Post":
+                query = """SELECT * FROM Post
+                    """
+                
+            elif table == "Project":
+                query = """
+                    SELECT *
+                    FROM Project
+                     
+                    """
+            elif table == "Record":
+                query = """
+                    SELECT *
+                    FROM Record 
+                    """
+            else:
+                print(f"{table} is an invalid table")
+
+            cursor.execute(query)
+            p_results = cursor.fetchall()
+            return p_results
+        except Exception as e:
+            print(f"Error querying posts: {e}")
+            return 1
+        finally:
+            if conn:
+                conn.close()
+
 def query_post(table,columns: list):
         load_dotenv()
 
@@ -394,6 +448,7 @@ def query_post(table,columns: list):
         finally:
             if conn:
                 conn.close()
+
 def query_projects(table, project_name):
     load_dotenv()
 

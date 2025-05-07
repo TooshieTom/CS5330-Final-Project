@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
-# import backend
+import datetime
+import backend
+import full_backend
 
 tables = {
-    "Users": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
+    "User": ["Username", "Soc_Med", "Name", "Verified", "Country_Birth", "Country_Res", "Age", "Gender"],
     "Post": ["Username", "Soc_Med", "Time_Posted", "City", "State", "Country", "Multimedia", "Name_F", "Name_L", "Likes", "Dislikes", "Text", "Poster_OG", "Time_OG"],
-    "Project": ["Name", "Manager", "Institute", "Start_Date", "End_Date"],
+    "Project": ["Name", "Manager", "Institute", "Start_Date (Yr-M-D)", "End_Date (Yr-M-D)"],
     "Record": ["Project", "Text", "Fields", "Username", "Time_Posted", "Soc_Med"]
 }
 
@@ -15,22 +17,98 @@ root.title("Databases")
 
 def IQ_change_frame(*args):
     # print("hello")
-    if IQ_selected.get() == "Insert":
+    x = IQ_selected.get()
+    if x == "Insert":
         # clear_frame(qframe)
+        pi_frame.pack_forget()
         qframe.pack_forget()
+        rframe.pack_forget()
         iframe.pack()
-    else:
+    elif x == "Query":
         # clear_frame(iframe)
+        pi_frame.pack_forget()
         iframe.pack_forget()
+        rframe.pack_forget()
         qframe.pack()
+    elif x == "Project":
+        iframe.pack_forget()
+        qframe.pack_forget()
+        rframe.pack_forget()
+        pi_frame.pack()
+    else:
+        iframe.pack_forget()
+        qframe.pack_forget()
+        pi_frame.pack_forget()
+        rframe.pack()
 
-# def clear_frame(frame):
-#     for widgets in frame.winfo_children():
-#         widgets.destroy()
+def create_ptable(data):
+    # table = "Post"
+    columns = ["Usernam", "Social Media", "Time"]
+
+    P_tree_frame.pack_forget()
+
+    for widget in P_tree_frame.winfo_children():
+        widget.destroy()
+    
+    tree = ttk.Treeview(P_tree_frame, columns=columns, show="headings", height=5)
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, anchor="center")
+    for row in data:
+        tree.insert("", tk.END, values=row)
+    scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
+    tree.configure(yscroll=scrollbar.set)
+    tree.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+    P_tree_frame.pack()
+
+def get_posts():
+    # name = pi_proj_entry.get()
+    # print(name)
+    # post_data = [
+    #         ("jdoe92", "Twitter", "2025-04-01 12:34:00", "New York", "NY", "USA", "Image", "John", "Doe", 120, 5, "Loving this weather!", True, "2025-04-01 12:34:00"),
+    #         ("asmith88", "Instagram", "2025-03-25 09:15:00", "Toronto", "ON", "Canada", "Video", "Alice", "Smith", 300, 2, "Morning workout done!", True, "2025-03-25 09:15:00"),
+    #     ]
+    #FUNCTION CALL HERE
+    data = full_backend.getAll("Post")
+    print("Returned data",data)
+    create_ptable(data)
+
+
+def p_submit(*args): # Insert record
+    entries = []
+    for i in p_entries:
+        entries.append(i.get())
+        # print(i.get())
+        i.delete(0,tk.END)
+    ###FUNCTION CALL HERE
+    entries.insert(1,"")
+    entries.insert(1,"")
+    print(entries)
+    backend.enterTuple(entries)
+
+
+def r_submit(*args): # Update record
+    #can do the smae thing of saying if it was successful or not
+    # table = "Record"
+
+    submit = []
+    for i in range(len(r_entries)):
+        x = r_entries[i].get()
+        submit.append(x)
+    ###FUNCTION CALL HERE
+    # if func == "success":
+    #     r_success.pack()
+    #     r_failed.pack_forget()
+    # else:
+    #     r_success.pack_forget()
+    #     r_failed.pack()
+
+
 def i_table_frame(*args):
     x = i_table_drop_var.get()
     # print(x)
-    if x == "Users":
+    if x == "User":
         i_entries.clear()
         i_button.pack_forget()
         iframe_post.pack_forget()
@@ -72,7 +150,10 @@ def i_table_frame(*args):
                 i_entries.append(widget)
     i_button.pack()
 
+# ec = 1
+
 def i_submit(*args):
+    # global ec
     # print("SUBMITTED")
     x = i_table_drop_var.get()
     print("Table: ", x)
@@ -85,15 +166,20 @@ def i_submit(*args):
 
     # backend call to actually query db for insert
     # ec = backend.enterTuple(entries)
+    # ec = 1
     # if ec == 1:
     #     # show input invalid
-    #     pass
+    #     failed.pack()
+    #     success.pack_forget()
+    # else:
+    #     failed.pack_forget()
+    #     success.pack()
 
 
 def update_columns(*args):
     x = from_var.get()
     # q_entries.clear()
-    if x == "Users":
+    if x == "User":
         check_button.pack_forget()
         qframe_sub.pack_forget()
         qframe_post.pack_forget()
@@ -136,94 +222,83 @@ def update_columns(*args):
         qframe_record.pack()
         qframe_sub.pack()
         check_button.pack()
-        q_entries[0] = q_columns_record_var
+        q_entries[0] = q_columns_record_var            
 
-def q_submit(table):
-    x = table.get()
-    if checked:
-        if x == "Users":
-            print(x)
-            print(q_columns_user_var.get())
-            print(q_drop_op_var.get())
-            print(q_entry_value.get())
-            print(more_drop_op_var.get())
-            print(more_entry_value.get())
-        elif x == "Post":
-            print(x)
-            print(q_columns_post_var.get())
-            print(q_drop_op_var.get())
-            print(q_entry_value.get())
-            print(more_drop_op_var.get())
-            print(more_entry_value.get())
-        elif x == "Project":
-            print(x)
-            print(q_columns_project_var.get())
-            print(q_drop_op_var.get())
-            print(q_entry_value.get())
-            print(more_drop_op_var.get())
-            print(more_entry_value.get())
-        elif x == "Record":
-            print(x)
-            print(q_columns_record_var.get())
-            print(q_drop_op_var.get())
-            print(q_entry_value.get())
-            print(more_drop_op_var.get())
-            print(more_entry_value.get())
+
+def create_qtable(table, data):
+    tree_frame.pack_forget()
+    if table == "Post":
+        columns = tables[table] + ["projects"]
     else:
-        q_words = ["COLUMN", "OPERATOR", "VALUE"]
-        if x == "Users":
-            print("Table: ", x)
-            entries = []
-            for q in q_entries:
-                entries.append(q.get())
-                if isinstance(q, tk.Entry):
-                    q.delete(0, tk.END)
-            for i in range(len(entries)):
-                print(q_words[i], ": ", entries[i])
-        elif x == "Post":
-            print(x)
-            print("Table: ", x)
-            entries = []
-            for q in q_entries:
-                entries.append(q.get())
-                if isinstance(q, tk.Entry):
-                    q.delete(0, tk.END)
-            for i in range(len(entries)):
-                print(q_words[i], ": ", entries[i])
-        elif x == "Project":
-            print(x)
-            print("Table: ", x)
-            entries = []
-            for q in q_entries:
-                entries.append(q.get())
-                if isinstance(q, tk.Entry):
-                    q.delete(0, tk.END)
-            for i in range(len(entries)):
-                print(q_words[i], ": ", entries[i])
-        elif x == "Record":
-            print(x)
-            print("Table: ", x)
-            entries = []
-            for q in q_entries:
-                entries.append(q.get())
-                if isinstance(q, tk.Entry):
-                    q.delete(0, tk.END)
-            for i in range(len(entries)):
-                print(q_words[i], ": ", entries[i])
-            
-            
+        columns = tables[table]
+    # num_col = len(data[0])
+    # print(num_col)
+
+    for widget in tree_frame.winfo_children():
+        widget.destroy()
+    # print(columns)
+    tree = ttk.Treeview(tree_frame, columns=columns, show="headings", height=5)
+    for col in columns:
+        tree.heading(col, text=col)
+        tree.column(col, anchor="center")
+    for row in data:
+        tree.insert("", tk.END, values=row)
+    scrollbar = ttk.Scrollbar(tree_frame, orient="vertical", command=tree.yview)
+    tree.configure(yscroll=scrollbar.set)
+    tree.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+    tree_frame.pack()
+
+
+def temp_db(arr): 
+    x = from_var.get()
+    if x == "User":
+        # User table
+        user_data = [
+            ("jdoe92", "Twitter", "John Doe", True, "USA", "UK", 31, "Male"),
+            ("asmith88", "Instagram", "Alice Smith", False, "Canada", "Canada", 29, "Female"),
+        ]
+        return user_data
+    elif x == "Post":
+        # Post table
+        post_data = [
+            ("jdoe92", "Twitter", "2025-04-01 12:34:00", "New York", "NY", "USA", "Image", "John", "Doe", 120, 5, "Loving this weather!", True, "2025-04-01 12:34:00"),
+            ("asmith88", "Instagram", "2025-03-25 09:15:00", "Toronto", "ON", "Canada", "Video", "Alice", "Smith", 300, 2, "Morning workout done!", True, "2025-03-25 09:15:00"),
+        ]
+        return post_data
+    elif x == "Project":
+        # Project table
+        project_data = [
+            ("GreenTech", "Emma Wilson", "EcoLab Inc.", "2023-01-15", "2024-12-31"),
+            ("AI4Good", "Daniel Chen", "TechU Research", "2022-09-01", "2025-05-30"),
+        ]
+        return project_data
+    elif x == "Record":
+        # Record table
+        record_data = [
+            ("GreenTech", "Installed solar panels in three locations.", "energy, sustainability", "jdoe92", "2024-11-22 10:00:00", "Twitter"),
+            ("AI4Good", "Developed a sentiment analysis tool.", "AI, NLP", "asmith88", "2025-01-05 14:45:00", "Instagram"),
+        ]
+        return record_data
+    return x
+
+
 def better_q_submit():
     selected_table = from_var.get()
     
     q_words = ["Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value",
                "Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value","Column", "Operator", "Value"]
     print(f"Table: {selected_table}")
-
+    submit = []
     for i in range(len(q_entries)):
         x = q_entries[i].get()
-        print(q_words[i], ": ", x)            
-        
-    
+        submit.append(x)
+        print(q_words[i], ": ", x)
+    #Pass submit array
+    data = temp_db(submit)#############################################################change line for database
+    create_qtable(selected_table, data)
+
+                
 def add_field():
     selected_table = from_var.get()
 
@@ -243,6 +318,7 @@ def add_field():
     op_drop.pack()
 
     value_label = tk.Label(field_frame, text="VALUE")
+    value_label.pack()
     value_entry = tk.Entry(field_frame)
     value_entry.pack()
 
@@ -251,34 +327,102 @@ def add_field():
     q_entries.append(op_var)
     q_entries.append(value_entry)
 
-def show_more(*args):
-    global checked 
-
-    #what table?
-    x = from_var.get()
-    print(x)
-    #add column label
-    q_more_column_label = tk.Label(more_frame, text="COLUMN")
-    more_frame.pack_forget()
-    q_more_column_label.pack()
-    more_frame.pack()
-    # button.pack_forget()
-    if checked:
-        more_frame.pack_forget()
-        checked = not checked
-    else:
-        more_frame.pack()
-        checked = not checked
-    # button.pack()
-
 iframe = tk.Frame(root)
 qframe = tk.Frame(root)
 
 IQ_selected = tk.StringVar(value="Select")
 IQ_selected.trace_add('write', IQ_change_frame)
-drop = tk.OptionMenu(root, IQ_selected, "Insert", "Query")
+drop = tk.OptionMenu(root, IQ_selected, "Insert", "Query", "Project", "Update Record")
 drop.pack(pady=10)
 
+"""RECORD UPDATE"""
+rframe = tk.Frame(root)
+
+# rframe_top = tk.Frame(rframe)
+# rframe_bottom = tk.Frame(rframe)
+
+# rframe_top.pack()
+# rframe_bottom.pack()
+r_entries = []
+
+r_failed = tk.Label(rframe, text="FAILED")
+r_success = tk.Label(rframe, text="SUCCESS")
+
+r_proj_label = tk.Label(rframe, text="Project Name")
+r_usr_label = tk.Label(rframe, text="Username")
+r_soc_label = tk.Label(rframe, text="Social Media")
+r_time_label = tk.Label(rframe, text="Time")
+r_field_label = tk.Label(rframe, text="Fields")
+
+r_proj_entry = tk.Entry(rframe)
+r_usr_entry  = tk.Entry(rframe)
+r_soc_entry  = tk.Entry(rframe)
+r_time_entry = tk.Entry(rframe)
+r_field_entry = tk.Entry(rframe)
+
+r_entries.append(r_proj_entry)
+r_entries.append(r_usr_entry)
+r_entries.append(r_soc_entry)
+r_entries.append(r_time_entry)
+r_entries.append(r_field_entry)
+
+r_proj_label.pack()
+r_proj_entry.pack()
+r_usr_label.pack()
+r_usr_entry.pack()
+r_soc_label.pack()
+r_soc_entry.pack()
+r_time_label.pack()
+r_time_entry.pack()
+r_field_label.pack()
+r_field_entry.pack()
+
+r_button = tk.Button(rframe, text="Update", command=r_submit)
+r_button.pack()
+
+"""PROJECT INSERT FRAME"""
+pi_frame = tk.Frame(root)
+pi_label_frame = tk.Frame(pi_frame)
+pi_entry_frame = tk.Frame(pi_frame)
+
+p_entries = []
+
+pi_proj_label = tk.Label(pi_frame, text="PROJECT NAME")
+pi_proj_entry = tk.Entry(pi_frame)
+pi_proj_button = tk.Button(pi_frame, text="update posts", command=get_posts)
+pi_proj_submit = tk.Button(pi_frame, text="Submit", command=p_submit)
+
+pi_po_usr_label = tk.Label(pi_label_frame, text="POST USERNAME")
+pi_po_usr_entry = tk.Entry(pi_entry_frame)
+
+pi_po_soc_label = tk.Label(pi_label_frame, text="POST SOC_MED")
+pi_po_soc_entry = tk.Entry(pi_entry_frame)
+
+pi_po_time_label = tk.Label(pi_label_frame, text="POST TIME")
+pi_po_time_entry = tk.Entry(pi_entry_frame)
+
+p_entries.append(pi_proj_entry)
+p_entries.append(pi_po_usr_entry)
+p_entries.append(pi_po_soc_entry)
+p_entries.append(pi_po_time_entry)
+
+pi_proj_label.pack()
+pi_proj_entry.pack()
+
+pi_label_frame.pack()
+pi_entry_frame.pack()
+
+pi_proj_button.pack(pady=20)
+pi_proj_submit.pack()
+
+pi_po_usr_label.pack(side="left", padx=40)
+pi_po_soc_label.pack(side="left",padx=40)
+pi_po_time_label.pack(side="left",padx=40)
+pi_po_usr_entry.pack(side="left")
+pi_po_soc_entry.pack(side="left")
+pi_po_time_entry.pack(side="left")
+
+pi_table_frame = tk.Frame(pi_frame)
 
 """INSERT FRAME"""
 i_table_label = tk.Label(iframe, text="TABLE")
@@ -288,6 +432,9 @@ i_table_drop = tk.OptionMenu(iframe, i_table_drop_var, *tables.keys())
 
 i_button = tk.Button(iframe, text="Submit Info" ,command=i_submit)
 
+success = tk.Label(iframe, text="INSERT SUCCESSFUL")
+failed = tk.Label(iframe, text="INSERT FAILED")
+
 i_entries = []
 
 i_table_label.pack()
@@ -296,7 +443,7 @@ i_table_drop.pack()
 """IFRAME USERS"""
 iframe_users = tk.Frame(iframe)
 
-for attribute in tables["Users"]:
+for attribute in tables["User"]:
     i_users_label = tk.Label(iframe_users, text=attribute)
     i_users_entry = tk.Entry(iframe_users)
     i_users_label.pack()
@@ -379,7 +526,7 @@ qframe_record = tk.Frame(qframe)
 
 """USERS"""
 q_columns_user_var = tk.StringVar(qframe_users, value="Choose")
-q_columns_user_drop = tk.OptionMenu(qframe_users, q_columns_user_var, *tables["Users"])
+q_columns_user_drop = tk.OptionMenu(qframe_users, q_columns_user_var, *tables["User"])
 
 
 q_columns_user_drop.pack()
@@ -431,6 +578,15 @@ more_drop_op_label.pack()
 more_drop_op.pack()
 more_label_value.pack()
 more_entry_value.pack()
+
+"""TABLE"""
+tree_frame = tk.Frame(qframe)
+# apsdoifj = tk.Label(tree_frame, text="HOAIWEHFPOIADHFPOIA")
+# apsdoifj.pack()
+# tree = ttk.Treeview(tree_frame)
+
+"""Project page table"""
+P_tree_frame = tk.Frame(pi_frame)
 
 
 root.mainloop()
