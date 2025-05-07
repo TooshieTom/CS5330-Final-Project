@@ -261,7 +261,7 @@ def enterTuple(inputs):
                 elif i == 12:
                     query += "poster_og, "
                 elif i == 13:
-                    query += "date_og, "
+                    query += "time_og, "
                 num_inputs += 1
                 parameters.append(inputs[i])
 

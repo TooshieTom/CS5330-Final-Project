@@ -480,12 +480,7 @@ def query_projects(project_name):
         records = cursor.fetchall()
         # print("Records:",records)
         if not records:
-            return {
-                "message": f"No posts found for project '{project_name}'.",
-                "posts": [],
-                "field_coverage": {}
-            }
-
+            return [], {}
         posts = []
         field_counts = defaultdict(int)
 
@@ -498,8 +493,10 @@ def query_projects(project_name):
                 print(f"Error parsing fields for record {record.get('ID', 'unknown')}: {e}")
                 fields = {}
 
-            for key in fields:
-                field_counts[key] += 1
+            for key, val in fields.items():
+                # only count if val is non-null/non-empty
+                if val is not None and val != "" and val != [] and val != {}:
+                    field_counts[key] += 1
 
             post_entry = {
                 "Record_Identifier": {
@@ -538,15 +535,13 @@ def query_projects(project_name):
             for rec in data
         ]
         
+        print(field_coverage)
         return Tuples, field_coverage
 
     except Exception as e:
         print(f"Error querying project data: {e}")
-        return {
-            "error": str(e),
-            "posts": [],
-            "field_coverage": {}
-        }
+        return [], {}
+    
     finally:
         if conn:
             conn.close()
@@ -556,8 +551,9 @@ def query_projects(project_name):
 def main():
     # clearTuples()
     # print(tuples)
-    tuples = query_projects("Skibidi")
-    print(tuples)
+    # tuples = query_projects("Skibidi")
+    #print(tuples)
+    pass
     # enterTuple(input)
 
 main()
